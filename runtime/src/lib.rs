@@ -279,6 +279,27 @@ impl pallet_template::Config for Runtime {
 	type Event = Event;
 }
 
+parameter_types! {
+	pub const MaxProofLength: u32 = 20;
+}
+
+impl pallet_poe::Config for Runtime {
+	type Event = Event;
+	type MaxProofLength = MaxProofLength;
+}
+
+parameter_types! {
+	pub const KittyDeposit: u64 = 100;
+}
+
+impl pallet_kitties::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type KittyRandomness = RandomnessCollectiveFlip;
+	type KittyIndex = u64;
+	type KittyDeposit = KittyDeposit;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -296,6 +317,8 @@ construct_runtime!(
 		Sudo: pallet_sudo,
 		// Include the custom logic from the pallet-template in the runtime.
 		TemplateModule: pallet_template,
+		POE: pallet_poe,
+		Kitties: pallet_kitties,
 	}
 );
 

@@ -4,6 +4,7 @@ use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 pub use pallet::*;
 use sp_runtime::traits::StaticLookup;
+use sp_std::prelude::*;
 
 #[cfg(test)]
 mod mock;
