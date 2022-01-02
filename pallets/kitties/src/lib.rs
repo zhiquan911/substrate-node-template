@@ -15,6 +15,7 @@ use frame_system::pallet_prelude::*;
 pub use pallet::*;
 use scale_info::TypeInfo;
 use sp_io::hashing::blake2_128;
+use sp_runtime::traits::Bounded;
 use sp_std::{borrow::ToOwned, convert::From, prelude::*};
 
 mod mock;
@@ -82,8 +83,6 @@ pub mod pallet {
 	pub enum Error<T> {
 		/// Handles arithemtic overflow when incrementing the Kitty counter.
 		KittyCntOverflow,
-		/// An account cannot own more Kitties than `MaxKittyCount`.
-		ExceedMaxKittyOwned,
 		/// Buyer cannot be the owner.
 		BuyerIsKittyOwner,
 		/// Cannot transfer a kitty to its owner.
@@ -173,6 +172,7 @@ pub mod pallet {
 		///
 		/// The actual kitty creation is done in the `mint()` function.
 		#[pallet::weight(100)]
+		#[transactional]
 		pub fn create_kitty(origin: OriginFor<T>) -> DispatchResult {
 			let sender = ensure_signed(origin)?;
 
@@ -189,6 +189,7 @@ pub mod pallet {
 		///
 		/// Updates Kitty price and updates storage.
 		#[pallet::weight(100)]
+		#[transactional]
 		pub fn sell_kitty(
 			origin: OriginFor<T>,
 			kitty_id: T::KittyIndex,
@@ -204,6 +205,7 @@ pub mod pallet {
 		/// Any account that holds a kitty can send it to another Account. This will reset the
 		/// asking price of the kitty, marking it not for sale.
 		#[pallet::weight(100)]
+		#[transactional]
 		pub fn transfer(
 			origin: OriginFor<T>,
 			to: T::AccountId,
@@ -223,6 +225,7 @@ pub mod pallet {
 		/// is changed.
 		#[transactional]
 		#[pallet::weight(100)]
+		#[transactional]
 		pub fn buy_kitty(
 			origin: OriginFor<T>,
 			kitty_id: T::KittyIndex,
@@ -308,6 +311,7 @@ pub mod pallet {
 			let kitty_id =
 				KittyCnt::<T>::try_mutate(|id| -> Result<T::KittyIndex, DispatchError> {
 					let current_id = *id;
+					ensure!(current_id < T::KittyIndex::max_value(), Error::<T>::KittyCntOverflow);
 					*id = id.checked_add(&One::one()).ok_or(Error::<T>::KittyCntOverflow)?;
 					Ok(current_id)
 				})?;

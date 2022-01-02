@@ -1,6 +1,6 @@
 #![cfg(test)]
 
-use crate::{mock::*, pallet::Error};
+use crate::{mock::*, pallet::Error, KittyCnt};
 use frame_support::{assert_noop, assert_ok};
 
 #[test]
@@ -55,6 +55,10 @@ fn create_kitty_unit_test() {
 
 		//check COCO reserved balanc after create new kitty
 		assert_eq!(KittyDeposit::get(), Balances::reserved_balance(COCO));
+
+		// should failed, new kiity id over flow
+		KittyCnt::<Test>::put(u64::MAX);
+		assert_noop!(Kitties::create_kitty(Origin::signed(ALICE)), Error::<Test>::KittyCntOverflow);
 	});
 }
 
