@@ -277,6 +277,7 @@ impl pallet_sudo::Config for Runtime {
 /// Configure the pallet-template in pallets/template.
 impl pallet_template::Config for Runtime {
 	type Event = Event;
+	type WeightInfo = pallet_template::weights::TemplateWeightInfo<Self>;
 }
 
 parameter_types! {

@@ -9,7 +9,7 @@ use frame_system::RawOrigin;
 
 benchmarks! {
 	do_something {
-		let s in 0 .. 100;
+		let s in 0 .. 1000;
 		let caller: T::AccountId = whitelisted_caller();
 	}: _(RawOrigin::Signed(caller), s)
 	verify {
@@ -18,3 +18,4 @@ benchmarks! {
 
 	impl_benchmark_test_suite!(Template, crate::mock::new_test_ext(), crate::mock::Test);
 }
+
